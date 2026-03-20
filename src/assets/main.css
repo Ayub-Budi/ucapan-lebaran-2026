@@ -1,0 +1,19 @@
+@import './base.css';
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #0a0a1a;
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  font-weight: normal;
+}
