@@ -12,7 +12,7 @@ const recipient = computed(() => (route.query.to as string) ?? '')
 const sender    = computed(() => isStatic ? 'Ayub Budi Santoso' : ((route.query.from as string) ?? ''))
 
 const audioEl   = ref<HTMLAudioElement | null>(null)
-const isPlaying = ref(false)
+const isPlaying = ref(true)
 
 function startMusic() {
   audioEl.value?.play()
@@ -25,8 +25,41 @@ function stopMusic() {
 }
 function toggleMusic() { isPlaying.value ? stopMusic() : startMusic() }
 
-onMounted(() => { if (settings.autoPlay) nextTick(startMusic) })
-onUnmounted(stopMusic)
+function unlockAndPlay() {
+  const el = audioEl.value
+  if (!el) return
+  el.muted = false
+  el.play()
+    .then(() => { isPlaying.value = true })
+    .catch(() => { isPlaying.value = false })
+  document.removeEventListener('click',      unlockAndPlay)
+  document.removeEventListener('touchstart', unlockAndPlay)
+}
+
+onMounted(() => {
+  nextTick(() => {
+    const el = audioEl.value
+    if (!el) return
+    // Coba muted autoplay dulu (browser izinkan)
+    el.muted = true
+    el.play()
+      .then(() => {
+        el.muted = false          // langsung unmute
+        isPlaying.value = true
+      })
+      .catch(() => {
+        el.muted = false
+        // Fallback: mainkan saat user pertama kali sentuh layar
+        document.addEventListener('click',      unlockAndPlay, { once: true })
+        document.addEventListener('touchstart', unlockAndPlay, { once: true })
+      })
+  })
+})
+onUnmounted(() => {
+  stopMusic()
+  document.removeEventListener('click',      unlockAndPlay)
+  document.removeEventListener('touchstart', unlockAndPlay)
+})
 
 const acStyle = computed(() => ({ '--ac': settings.accentColor }))
 </script>

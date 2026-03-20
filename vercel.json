@@ -1,7 +1,9 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "headers": [
     {
-      "source": "/assets/(.*)\\.mp3",
+      "source": "/assets/(.*).mp3",
       "headers": [
         { "key": "Content-Type", "value": "audio/mpeg" },
         { "key": "Accept-Ranges", "value": "bytes" }
